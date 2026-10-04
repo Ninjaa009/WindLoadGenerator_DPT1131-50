@@ -6,16 +6,43 @@
 คำนวณ `q`, `Cₑ`, `pᵢ`, `p`, `p_net` ครบ **8 โซน** (ลมตั้งฉากสันหลังคา) และ **12 โซน** (ลมขนานสันหลังคา)
 แยกเป็น 4 Load Case (LC1–LC4) พร้อมสรุปค่าวิกฤตและแผ่นแสดงการคำนวณ (calculation sheet)
 
-มีให้ใช้ 2 แบบ ผลคำนวณตรงกัน:
+มีให้ใช้ 3 แบบ ผลคำนวณตรงกัน:
 
 | ไฟล์ | รูปแบบ | ต้องติดตั้ง |
 |---|---|---|
+| [`streamlit_app.py`](streamlit_app.py) | เว็บแอป Streamlit — deploy ขึ้น Streamlit Community Cloud ได้ | `streamlit`, `pandas` |
 | [`index.html`](index.html) | เว็บแอป (React) ไฟล์เดียว เปิดในเบราว์เซอร์ได้ทันที ใช้งานออฟไลน์ได้ | ไม่ต้อง |
-| [`wind_load.py`](wind_load.py) | Mini Python — command line / ใช้เป็น library | Python 3.8+ (standard library เท่านั้น) |
+| [`wind_load.py`](wind_load.py) | Mini Python — command line / ใช้เป็น library (ตัวคำนวณหลักของ Streamlit ด้วย) | Python 3.8+ (standard library เท่านั้น) |
+
+![Streamlit app](docs/streamlit_screenshot.png)
 
 ---
 
 ## เริ่มใช้งาน
+
+### Streamlit
+
+รันในเครื่อง:
+
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py      # เปิด http://localhost:8501
+```
+
+Deploy ขึ้น **Streamlit Community Cloud** (ฟรี):
+
+1. Push repo นี้ขึ้น GitHub (ต้องมี `streamlit_app.py`, `wind_load.py`, `requirements.txt`, `docs/` อยู่ใน branch ที่จะ deploy)
+2. เข้า <https://share.streamlit.io> → ล็อกอินด้วย GitHub → **Create app** → **Deploy a public app from GitHub**
+3. กรอก
+   - Repository: `Ninjaa009/WindLoadGenerator_DPT1131-50`
+   - Branch: `main` (หรือ branch ที่มีไฟล์)
+   - Main file path: `streamlit_app.py`
+4. (ไม่บังคับ) ตั้ง App URL เช่น `windload-dpt1311` → กด **Deploy** รอ 1–2 นาที
+5. ทุกครั้งที่ push ขึ้น branch นั้น แอปจะอัปเดตเองอัตโนมัติ
+
+ในแอปมี: แถบซ้ายกรอกข้อมูล · แท็บเครื่องคำนวณ (ค่ากลาง, LC1–LC4, calculation sheet, ดาวน์โหลด CSV/TXT)
+· แท็บสรุปค่าออกแบบ (ค่าวิกฤตต่อโซนตามทิศลม) · แท็บเอกสารอ้างอิงสูตร
+ธีมสีกำหนดใน [`.streamlit/config.toml`](.streamlit/config.toml)
 
 ### เว็บแอป
 
@@ -196,11 +223,16 @@ p_net = p − pᵢ
 
 ```
 .
+├── streamlit_app.py  # เว็บแอป Streamlit (เรียกใช้ wind_load.py)
+├── requirements.txt  # dependency สำหรับ Streamlit
+├── .streamlit/
+│   └── config.toml   # ธีมสี
 ├── index.html        # เว็บแอปไฟล์เดียว (React + รูปโซนฝังเป็น base64)
 ├── wind_load.py      # Mini Python: CLI + library ตรรกะเดียวกับเว็บ
 ├── docs/
-│   ├── zone_case1.png  # รูปโซนกรณีลมตั้งฉากสันหลังคา
-│   └── zone_case2.png  # รูปโซนกรณีลมขนานสันหลังคา
+│   ├── zone_case1.png          # รูปโซนกรณีลมตั้งฉากสันหลังคา
+│   ├── zone_case2.png          # รูปโซนกรณีลมขนานสันหลังคา
+│   └── streamlit_screenshot.png
 └── README.md
 ```
 
